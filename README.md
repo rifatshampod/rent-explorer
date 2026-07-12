@@ -1,2 +1,2 @@
 # rent-explorer
-Technical mini assessment from Chaos Architects
+A mini **location-intelligence** tool for the Helsinki metro rental market: an interactive map that lets a non technical user explore ~850 rental listings, filter them, and see how price varies by area.
