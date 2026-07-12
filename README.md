@@ -29,7 +29,14 @@ Three services, orchestrated by `docker compose`:
 - *(Optional)* Node.js, for editor tooling outside the container.
 
 
-### 1. Add the data files
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/rifatshampod/rent-explorer.git
+cd rent-explorer
+```
+
+### 2. Add the data files
 
 `listings.csv` and `helsinki_areas.geojson` are gitignored and must be supplied manually. Place them in `data/` at the repo root:
 
@@ -39,7 +46,7 @@ data/
 └── helsinki_areas.geojson  # 12 area polygons
 ```
 
-### 2. Configure (optional)
+### 3. Configure (optional)
 
 Defaults cover local use. To override, copy the template, see [Configuration](#configuration) for more details.
 
@@ -48,7 +55,7 @@ cp .env.example .env
 ```
 
 
-### 3. Running the app
+### 4. Running the app
 
 ```bash
 docker compose up --build -d
@@ -172,7 +179,6 @@ one-to-one — so the loader logs every drop and keep, making it auditable.
 
 ### With more time
 
-- Reject out-of-area rows against the real polygons, not a metro rectangle.
 - Radius-search UI (the `/listings/near` endpoint already exists).
 - Static production frontend build + production compose.
 - CI running the test suite.
