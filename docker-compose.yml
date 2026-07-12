@@ -22,7 +22,7 @@ services:
     environment:
       # SQLAlchemy URL (note the +psycopg2 driver), assembled from the same
       # POSTGRES_* vars as the db service. host = "db" (the compose service name).
-      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-rent}:${POSTGRES_PASSWORD:-rent}@db:5432/${POSTGRES_DB:-rent}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-rentdbuser}:${POSTGRES_PASSWORD:-rentStrongPassword}@db:5432/${POSTGRES_DB:-rentexplorer}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
       # Where the loader reads the mounted data files inside the container.
       LISTINGS_CSV: /data/listings.csv
