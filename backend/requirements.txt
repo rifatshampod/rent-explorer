@@ -1,0 +1,12 @@
+Flask==3.1.0
+Flask-Cors==5.0.0
+gunicorn==23.0.0
+
+SQLAlchemy==2.0.36
+GeoAlchemy2==0.16.0
+# psycopg2-binary — the PostgreSQL driver SQLAlchemy talks through. The -binary
+# build ships precompiled so no system build tools are needed in the image.
+psycopg2-binary==2.9.10
+
+# --- test-only ---
+pytest==8.3.4
