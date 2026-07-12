@@ -6,6 +6,9 @@ gunicorn (see entrypoint.sh) imports the module-level `app` created at the botto
 from flask import Flask, jsonify
 from sqlalchemy import text
 
+from flask_cors import CORS
+from config import CORS_ORIGINS
+
 from db import SessionLocal
 from validation import ApiError
 
@@ -15,6 +18,9 @@ from flasgger import Swagger
 
 def create_app():
     app = Flask(__name__)
+
+    # --- CORS -------------------------------------------------------------
+    CORS(app, resources={r"/*": {"origins": CORS_ORIGINS}}, methods=["GET"])
 
      # --- Swagger UI -------------------------------------------------------
     Swagger(
