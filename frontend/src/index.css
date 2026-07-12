@@ -1,6 +1,4 @@
-/* Global styles. Kept minimal — most component styling is inline in this
-   training build; this file holds only things that must be global (Leaflet
-   tooltip overrides can't be set inline). */
+
 
 html,
 body,
@@ -9,15 +7,6 @@ body,
   height: 100%;
 }
 
-/* (Choropleth per-cell labels were removed — the listings are the primary
-   layer, so the price grid stays quiet in the background.) */
-
-/* Floating control card.
-   - Detached from every edge (top/right offsets + translateY centre) so the map
-     shows around all sides.
-   - Height fits its content (no fixed height); a max-height + internal scroll
-     keeps it on-screen if the content ever grows taller than the viewport.
-   - Sits above Leaflet's panes/controls (their z-index tops out ~1000). */
 .filter-card {
   position: absolute;
   top: 50%;
@@ -69,9 +58,7 @@ body,
   background: #eaeef3;
 }
 
-/* Listing pin (an SVG divIcon). Leaflet gives divIcons a white box by default;
-   strip it so only the SVG shows, add a soft drop shadow so the pin lifts off
-   the map, and a subtle grow on hover to signal it's clickable. */
+/* Listing pin (an SVG divIcon).*/
 .listing-pin {
   background: transparent;
   border: none;

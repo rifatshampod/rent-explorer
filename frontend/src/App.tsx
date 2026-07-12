@@ -1,13 +1,3 @@
-/**
- * App — the top-level component. It OWNS the two pieces of shared state:
- *   - `filters` (rent/rooms/type), edited by FilterPanel,
- *   - `bbox`    (map viewport), reported by MapView,
- * and wires them into the data hooks, then lays out the map + side panel.
- *
- * Data flow (one direction, easy to follow):
- *   FilterPanel/Map --(state)--> App --(query args)--> useListings/useAreaStats
- *   --(data)--> MapView / SummaryPanel / Legend.
- */
 
 import { useMemo, useState } from "react";
 
