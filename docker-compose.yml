@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rentdbuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rentStrongPassword}
+      POSTGRES_DB: ${POSTGRES_DB:-rentexplorer}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # Use the same configured user/db as above.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rentdbuser} -d ${POSTGRES_DB:-rentexplorer}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    # Build the FLASK backend (the primary backend).
+    build: ./backend
+    environment:
+      # SQLAlchemy URL (note the +psycopg2 driver), assembled from the same
+      # POSTGRES_* vars as the db service. host = "db" (the compose service name).
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-rent}:${POSTGRES_PASSWORD:-rent}@db:5432/${POSTGRES_DB:-rent}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      # Where the loader reads the mounted data files inside the container.
+      LISTINGS_CSV: /data/listings.csv
+      AREAS_GEOJSON: /data/helsinki_areas.geojson
+    volumes:
+      # Mount the two source data files (read-only) from the project root.
+      - ./data/listings.csv:/data/listings.csv:ro
+      - ./data/helsinki_areas.geojson:/data/helsinki_areas.geojson:ro
+      # Mount the tests (kept out of the image) so `docker compose exec api
+      # pytest -q` works without a rebuild.
+      - ./backend/tests:/app/tests:ro
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    # Frontend: Vite dev server.
+    build: ./frontend
+    environment:
+      # The browser (not the container) makes the API calls, so this is the API
+      # as seen from the HOST. Defaults to localhost:8000.
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${WEB_PORT:-5173}:5173"
+    depends_on:
+      - api        
+
+volumes:
+  pgdata:
