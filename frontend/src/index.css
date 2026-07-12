@@ -1,0 +1,87 @@
+/* Global styles. Kept minimal — most component styling is inline in this
+   training build; this file holds only things that must be global (Leaflet
+   tooltip overrides can't be set inline). */
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+/* (Choropleth per-cell labels were removed — the listings are the primary
+   layer, so the price grid stays quiet in the background.) */
+
+/* Floating control card.
+   - Detached from every edge (top/right offsets + translateY centre) so the map
+     shows around all sides.
+   - Height fits its content (no fixed height); a max-height + internal scroll
+     keeps it on-screen if the content ever grows taller than the viewport.
+   - Sits above Leaflet's panes/controls (their z-index tops out ~1000). */
+.filter-card {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  z-index: 1100;
+
+  width: 300px;
+  max-height: calc(100vh - 48px); /* never taller than viewport minus margins */
+  overflow-y: auto;
+
+  padding: 20px;
+  display: grid;
+  gap: 20px;
+  align-content: start;
+
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 14px;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px); /* subtle frost so map behind doesn't distract */
+}
+
+/* Give the form controls a slightly more "standard form" look. */
+.filter-card input,
+.filter-card select {
+  padding: 6px 8px;
+  border: 1px solid #cbd2d9;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+.filter-card input:focus,
+.filter-card select:focus {
+  outline: none;
+  border-color: #0b6cff;
+  box-shadow: 0 0 0 2px rgba(11, 108, 255, 0.15);
+}
+.filter-card button {
+  padding: 7px 10px;
+  border: 1px solid #cbd2d9;
+  border-radius: 8px;
+  background: #f5f7fa;
+  cursor: pointer;
+  font-size: 14px;
+}
+.filter-card button:hover {
+  background: #eaeef3;
+}
+
+/* Listing pin (an SVG divIcon). Leaflet gives divIcons a white box by default;
+   strip it so only the SVG shows, add a soft drop shadow so the pin lifts off
+   the map, and a subtle grow on hover to signal it's clickable. */
+.listing-pin {
+  background: transparent;
+  border: none;
+}
+.listing-pin .pin-svg {
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  transition: transform 0.1s ease;
+  transform-origin: bottom center; /* grow from the tip so it stays anchored */
+}
+.listing-pin:hover .pin-svg {
+  transform: scale(1.25);
+}
