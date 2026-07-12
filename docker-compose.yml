@@ -40,5 +40,20 @@ services:
       db:
         condition: service_healthy
 
+  web:
+    # Frontend: Vite dev server.
+    build: ./frontend
+    environment:
+      # The browser (not the container) makes the API calls, so this is the API
+      # as seen from the HOST. Defaults to localhost:8000.
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${WEB_PORT:-5173}:5173"
+    depends_on:
+      - api        
+
 volumes:
   pgdata:

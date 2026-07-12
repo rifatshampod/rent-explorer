@@ -1,8 +1,5 @@
 """
 routes/areas.py — GET /areas/stats.
-
-Returns a GeoJSON FeatureCollection: one feature per area polygon, with the
-MEDIAN rent and MEDIAN €/m² of the listings inside it.
 """
 
 from flask import Blueprint, jsonify
@@ -23,20 +20,6 @@ def get_area_stats():
       200:
         description: A GeoJSON FeatureCollection, one Feature per area polygon.
     """
-    # Three things happen in this one query:
-    #
-    # 1. POINT-IN-POLYGON JOIN: LEFT JOIN listings ON ST_Contains(area, point).
-    #    ST_Contains(polygon, point) is true when the point is inside. LEFT JOIN
-    #    (not INNER) so an area with zero listings still appears, with NULL
-    #    medians (the map renders it grey).
-    #
-    # 2. MEDIAN via percentile_cont(0.5) WITHIN GROUP (...). The assignment asks
-    #    for the median (robust to a few extreme rents, unlike the average).
-    #    NULL rents are skipped automatically.
-    #
-    # 3. GeoJSON BUILT IN SQL: ST_AsGeoJSON turns each polygon into GeoJSON
-    #    geometry, and jsonb_build_object / jsonb_agg assemble the Feature /
-    #    FeatureCollection so the route just returns the object.
     sql = text(
         """
         SELECT jsonb_build_object(
