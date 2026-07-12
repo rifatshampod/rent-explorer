@@ -41,13 +41,6 @@ def get_listings():
     # a filter is omitted its param is NULL, so that clause is always true and
     # disappears — one static, fully-parameterized query serves every filter
     # combination, with no string concatenation.
-    #
-    # The bbox uses `geom && ST_MakeEnvelope(...)`: the && (bbox-overlap) operator
-    # is the one the GiST index accelerates.
-    #
-    # The ::type casts on the NULL guards tell Postgres each parameter's type;
-    # without them a param used only in ":p IS NULL" has no inferable type and
-    # errors with "could not determine data type of parameter".
     sql = text(
         """
         SELECT
