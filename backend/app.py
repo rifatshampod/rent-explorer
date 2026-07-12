@@ -9,9 +9,30 @@ from sqlalchemy import text
 from db import SessionLocal
 from validation import ApiError
 
+from routes import listings, areas
+from flasgger import Swagger
+
 
 def create_app():
     app = Flask(__name__)
+
+     # --- Swagger UI -------------------------------------------------------
+    Swagger(
+        app,
+        template={
+            "info": {
+                "title": "Rent Explorer API (Flask)",
+                "description": "Location-intelligence backend: listings, area "
+                "price stats, and radius search over the Helsinki metro rentals.",
+                "version": "1.0.0",
+            }
+        },
+    )
+
+
+    # --- Routes -----------------------------------------------------------
+    app.register_blueprint(listings.bp)
+    app.register_blueprint(areas.bp)
 
     # --- Error handling ---------------------------------------------------
     # Any ApiError raised during validation becomes a JSON error with its status
