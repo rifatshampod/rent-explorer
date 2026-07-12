@@ -11,6 +11,7 @@ bp = Blueprint("listings", __name__)
 def _rows_to_dicts(result):
     """Turn a SQLAlchemy Result into a list of plain dicts for jsonify."""
     return [dict(row._mapping) for row in result]
+    
 
 
 @bp.get("/listings")
@@ -71,5 +72,55 @@ def get_listings():
 
     with SessionLocal() as session:
         rows = _rows_to_dicts(session.execute(sql, params))
+
+    return jsonify({"count": len(rows), "listings": rows})
+
+
+@bp.get("/listings/near")
+def get_listings_near():
+    """
+    List listings within a radius of a point, nearest first.
+    ---
+    tags: [listings]
+    parameters:
+      - {in: query, name: lat, type: number, required: true, description: "Centre latitude"}
+      - {in: query, name: lng, type: number, required: true, description: "Centre longitude"}
+      - {in: query, name: radius_m, type: number, required: true, description: "Search radius in metres (max 50000)"}
+    responses:
+      200:
+        description: Listings within the radius, sorted by distance.
+      400:
+        description: Invalid query parameters.
+    """
+    p = parse_near_params(request.args)
+
+    # Cast geom to ::geography so ST_DWithin / ST_Distance work in METRES (SRID
+    # 4326 units are degrees, meaningless for "within 1000 m"). ST_DWithin on
+    # geography is also index-assisted. Sorted by the computed distance so the
+    # nearest listing comes first. ST_MakePoint takes (lng, lat).
+    sql = text(
+        """
+        SELECT
+            listing_id, rooms, size_m2, rent_eur, property_type, listed_date,
+            ST_Y(geom) AS latitude,
+            ST_X(geom) AS longitude,
+            ROUND(
+                ST_Distance(
+                    geom::geography,
+                    ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography
+                )::numeric, 1
+            ) AS distance_m
+        FROM listings
+        WHERE ST_DWithin(
+            geom::geography,
+            ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
+            :radius_m
+        )
+        ORDER BY distance_m ASC
+        """
+    )
+
+    with SessionLocal() as session:
+        rows = _rows_to_dicts(session.execute(sql, p))
 
     return jsonify({"count": len(rows), "listings": rows})
